@@ -61,6 +61,9 @@ The script will:
 - Download only new videos (those not already downloaded).
 - Delete the oldest videos to maintain the 5 most recent ones in each channel folder.
 
+## Disclaimer
+This script is intended for personal, non-commercial use only. Downloading videos from YouTube without permission may violate YouTube's Terms of Service. The author is not responsible for any misuse of this script. Use it responsibly and ensure compliance with local laws and regulations.
+
 ## Troubleshooting
 
 ### Lower Quality Videos Are Downloaded
