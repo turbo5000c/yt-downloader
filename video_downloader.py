@@ -10,7 +10,7 @@ CHANNELS = {
     "Channel-2": "https://www.youtube.com/@Channel-3", # replace with youtube Channel URL
 }
 MAX_VIDEOS = 5  # Number of latest videos to download per channel
-YT_DLP_PATH = "/home/samba/.local/bin/yt-dlp"  # Path to yt-dlp binary
+YT_DLP_PATH = "yt-dlp"  # Path to yt-dlp binary
 
 def download_latest_videos(channel_name, channel_url, download_folder, max_videos):
     """
