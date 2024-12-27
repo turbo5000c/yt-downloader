@@ -25,13 +25,13 @@ pip install yt-dlp
 
 ## Configuration
 
-``` 1. Set Your Download Folder
+### 1. Set Your Download Folder
 Update the `DOWNLOAD_FOLDER` variable in the script to the folder where videos should be saved. For example:
 ```
 DOWNLOAD_FOLDER = "/path/to/smb/folder"
 ```
 
-``` 2. Add YouTube Channels
+### 2. Add YouTube Channels
 Update the `CHANNELS` dictionary with the YouTube channels you want to download videos from:
 ```
 CHANNELS = {
@@ -40,7 +40,7 @@ CHANNELS = {
 }
 ```
 
-``` 3. Adjust Video Quality (Optional)
+### 3. Adjust Video Quality (Optional)
 By default, the script downloads videos up to 1080p resolution. To change this, modify the `--format` option in the script:
 ```
 "--format", "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
@@ -53,27 +53,27 @@ Run the script using Python:
 python video_downloader.py
 ```
 
-``` First Run
+### First Run
 On the first run, the script will download up to 5 videos per channel (or fewer if less are available).
 
-``` Subsequent Runs
+### Subsequent Runs
 The script will:
 - Download only new videos (those not already downloaded).
 - Delete the oldest videos to maintain the 5 most recent ones in each channel folder.
 
 ## Troubleshooting
 
-``` Lower Quality Videos Are Downloaded
+### Lower Quality Videos Are Downloaded
 Check the available formats for a sample video:
 ```
 yt-dlp -F https://www.youtube.com/watch?v=VIDEO_ID
 ```
 Update the `--format` option in the script to match your desired quality.
 
-``` Script Does Not Download New Videos
+### Script Does Not Download New Videos
 Ensure the `downloaded_videos.txt` archive file is not corrupted or empty. This file is located in each channel's folder.
 
-``` Permission Issues with SMB Folder
+### Permission Issues with SMB Folder
 Verify that the user running the script has write access to the download folder:
 ```
 sudo chmod -R 755 /path/to/smb/folder
