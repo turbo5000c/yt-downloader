@@ -1,6 +1,6 @@
 import os
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Configuration
 DOWNLOAD_FOLDER = "/folder/for/youtube-shows"  # Replace with your Jellyfin media directory
@@ -11,10 +11,12 @@ CHANNELS = {
 }
 MAX_VIDEOS = 5  # Number of latest videos to download per channel
 YT_DLP_PATH = "yt-dlp"  # Path to yt-dlp binary
+DAYS_TO_CHECK = 45  # Number of days to look back for new videos
 
-def download_latest_videos(channel_name, channel_url, download_folder, max_videos):
+
+def download_latest_videos(channel_name, channel_url, download_folder, max_videos, days_to_check):
     """
-    Downloads videos from the specified YouTube channel, ensuring only the latest max_videos are kept.
+    Downloads new videos from the specified YouTube channel and ensures only the latest max_videos are kept.
     """
     try:
         # Create a subfolder for the channel
@@ -25,26 +27,20 @@ def download_latest_videos(channel_name, channel_url, download_folder, max_video
         # Archive file to track downloaded videos
         archive_file = os.path.join(channel_folder, "downloaded_videos.txt")
 
-        # Count existing files in the folder
-        existing_files = [
-            f for f in os.listdir(channel_folder) if os.path.isfile(os.path.join(channel_folder, f))
-        ]
-        num_existing_videos = len(existing_files)
+        # Calculate the date threshold for filtering videos
+        date_after = (datetime.now() - timedelta(days=days_to_check)).strftime('%Y%m%d')
 
-        # Calculate how many videos need to be downloaded
-        num_to_download = max(0, max_videos - num_existing_videos)
-        if num_to_download == 0:
-            print(f"No new videos needed for {channel_name}.")
-            return
-
-        # yt-dlp command to download the required number of videos
+        # yt-dlp command to download videos
         command = [
             YT_DLP_PATH,
-            "--max-downloads", str(num_to_download),  # Download only the required number of videos
-            "--output", f"{channel_folder}/%(title)s.%(ext)s",
-            "--format", "bestvideo+bestaudio/best",
-            "--no-overwrites",  # Avoid overwriting existing files
+            "--output", f"{channel_folder}/%(upload_date)s_%(title)s.%(ext)s",  # Include upload date for sorting
+            "--format", "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+            "--merge-output-format", "mp4",
+            "--playlist-items", "1-5",
+            "--no-overwrites",
             "--download-archive", archive_file,  # Prevent redownloading
+            "--dateafter", date_after,  # Only download videos uploaded after this date
+            "--max-downloads", str(max_videos),  # Limit the number of downloads per run
             channel_url
         ]
 
@@ -56,6 +52,7 @@ def download_latest_videos(channel_name, channel_url, download_folder, max_video
 
     except Exception as e:
         print(f"Error processing channel {channel_name}: {e}")
+
 
 def manage_folder(folder, max_videos):
     """
@@ -77,11 +74,15 @@ def manage_folder(folder, max_videos):
     except Exception as e:
         print(f"Error managing folder {folder}: {e}")
 
+
 if __name__ == "__main__":
     print(f"Starting download at {datetime.now()}")
 
     for channel_name, channel_url in CHANNELS.items():
         print(f"Processing channel: {channel_name}")
+        download_latest_videos(channel_name, channel_url, DOWNLOAD_FOLDER, MAX_VIDEOS, DAYS_TO_CHECK)
+
+    print(f"Finished download at {datetime.now()}")
         download_latest_videos(channel_name, channel_url, DOWNLOAD_FOLDER, MAX_VIDEOS)
 
     print(f"Finished download at {datetime.now()}")
